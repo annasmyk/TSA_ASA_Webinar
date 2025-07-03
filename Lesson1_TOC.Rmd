@@ -1,0 +1,29 @@
+---
+title: 'Time Series: A First Course with Bootstrap Starter'
+output: pdf_document
+---
+
+```{r, setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "Data")
+```
+
+
+# Lesson 1-1: Time Series Data
+
+## Serial Dependence and Forecasting
+
+# Lesson 1-2: Cycles 
+
+# Lesson 1-3: Windows and Transforms
+
+## Windowing 
+
+## Log Transformation
+
+# Lesson 1-4: Time Series Regression and Autoregression
+
+## Regression on Time Trend
+
+## Regression on Past of Self
+
+## Incorporate Time Trend

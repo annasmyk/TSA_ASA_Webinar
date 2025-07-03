@@ -1,12 +1,10 @@
 ---
 title: 'Time Series: A First Course with Bootstrap Starter'
-output:
-  html_document:
-    df_print: paged
+output: pdf
 ---
 
 ```{r, setup, include=FALSE}
-knitr::opts_knit$set(root.dir = 'C:/Users/neide/OneDrive/Documents/GitHub/BEwebinar/Data')
+knitr::opts_knit$set(root.dir = "Data")
 ```
 
 # Lesson 1-4: Time Series Regression and Autoregression
