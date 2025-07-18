@@ -1,6 +1,7 @@
 ---
 title: 'Time Series: A First Course with Bootstrap Starter'
 output: pdf_document
+
 ---
 
 ```{r, setup, include=FALSE}
