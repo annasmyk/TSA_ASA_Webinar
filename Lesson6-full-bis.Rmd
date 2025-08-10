@@ -9,6 +9,10 @@ output:
 knitr::opts_knit$set(root.dir = "Data")
 ```
 
+# insertions cf chap 3 ou 4
+
+
+
 # Lesson 6-1: Spectral Density
 
 - We define the spectral density, which allows us to do time series analysis in
@@ -86,6 +90,12 @@ maq.spec <- function(ma.acf,mesh)
 - We plot $f(\lambda)$ with $q=2$, $\gamma(0)=1$, $\rho(1)= 0$, and $\rho(2) =.6$.
 - However, these values do not correspond to a positive definite autocovariance,
 and the resulting function takes negative values.
+
+- Q: est ce grave ? see recording 
+
+- arguments fonction: detail ? 
+- variance et q autocorreclations (1 à q)
+- ma.acf stocke ces q+1 valeurs, q est deduit 
 
 ```{r}
 spec <- maq.spec(c(1,0,.6),mesh)
