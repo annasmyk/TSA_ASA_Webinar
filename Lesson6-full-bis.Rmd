@@ -1,8 +1,8 @@
 ---
 title: 'Time Series: A First Course with Bootstrap Starter'
-output:
-  html_document:
-    df_print: paged
+output: pdf_document
+toc: true
+toc-depth: 3
 ---
 
 ```{r, setup, include=FALSE}
@@ -1043,6 +1043,346 @@ print(c(phi1,phi2))
 print(coeffs[[2]])
 ```
 
+# Lesson 7-2: Discrete Fourier Transform
+
+We introduce the data analysis tool of Discrete Fourier Transform.
+
+## Definition 7.2.3.
+
+Given a sample $X_1, \ldots, X_n$, the **Discrete Fourier Transform** (DFT) at the
+Fourier frequency $\lambda_l = 2 \pi l/n$ (for $[n/2]-n+1 \leq l \leq [n/2]$) is
+\[
+ \widetilde{X} (\lambda_l) = n^{-1/2} \sum_{t=1}^n X_t e^{-i \lambda_l t}.
+\]
+
+## Definition 7.2.4.
+
+- The **periodogram** $I(\lambda)$ is a non-negative function of $\lambda \in [-\pi,\pi]$,
+constructed from the sample $X_1, \ldots, X_n$:
+\[
+ I(\lambda) = n^{-1} { \left| \sum_{t=1}^n (X_t - \overline{X}) e^{-i \lambda t} \right| }^2.
+\]
+- So $I(0) = 0$. Sometimes we consider an "uncentered" periodogram, where there is
+no centering by the sample mean. We denote this by $\widetilde{I} (\lambda)$, and
+\[
+  \widetilde{I} (\lambda_l) = {| \widetilde{X} (\lambda_l) |}^2.
+\]
+- The periodogram is an empirical version of the spectral density, and shares certain
+properties. Higher values correspond to cyclical effects in the data.
+
+## Proposition 7.2.7.
+
+- Let the vector of DFTs be denoted $\widetilde{\underline{X}}$, which has components
+$\widetilde{X} (\lambda_l)$. 
+- This is a linear function of the sample vector $\underline{X}$: 
+\[
+\widetilde{\underline{X}} =  Q^* \, \underline{X},
+\]
+where $Q$ was defined in Definition 6.4.3. 
+- Since $Q$ is unitary, $Q^{-1} = Q^*$, so we can recover the data from the DFT vector
+via
+\[
+  \underline{X} = Q \, \widetilde{\underline{X}}.
+\]
+
+## Exercise 7.14. DFT of an AR(1).
+
+- We simulate an AR(1).
+
+```{r}
+arp.sim <- function(n,burn,ar.coefs,innovar)
+{
+	p <- length(ar.coefs)
+	z <- rnorm(n+burn+p,sd=sqrt(innovar))
+	x <- z[1:p]
+	for(t in (p+1):(p+n+burn))
+	{
+		next.x <- sum(ar.coefs*x[(t-1):(t-p)]) + z[t]
+		x <- c(x,next.x)
+	}	
+	x <- x[(p+burn+1):(p+burn+n)]
+	return(x)
+}
+
+phi <- .8
+innovar <- 1
+n <- 200
+x.sim <- arp.sim(n,500,phi,innovar)
+```
+
+- We compute the DFT. We begin with code to compute $Q$.
+
+```{r}
+get.qmat <- function(mesh)
+{
+	mesh2 <- floor(mesh/2)
+	inds <- seq(mesh2-mesh+1,mesh2)
+	Q.mat <- exp(1i*2*pi*mesh^{-1}*t(t(seq(1,mesh)) %x% inds))*mesh^{-1/2}
+	return(Q.mat)
+}
+Q.mat <- get.qmat(n)
+```
+
+- Then we use Proposition 7.2.7 to get the DFT vector. We plot the real part, imaginary part,
+and the modulus.
+
+```{r}
+x.dft <- Conj(t(Q.mat)) %*% x.sim
+plot(ts(Re(x.dft),start=-floor(n/2)+1,frequency=1),
+	xlab="Frequency Index",ylab="Real Part")
+plot(ts(Im(x.dft),start=-floor(n/2)+1,frequency=1),
+	xlab="Frequency Index",ylab="Imaginary Part")
+plot(ts(Mod(x.dft)^2,start=-floor(n/2)+1,frequency=1),
+	xlab="Frequency Index",ylab="Squared Modulus")
+```
+
+## Corollary 7.2.9. Decorrelation Property of the DFT.
+
+- Let $X_1, \ldots, X_n$ be a sample from a mean zero, covariance stationary time
+series with absolutely summable ACVF and spectral density $f$. Then 
+$\widetilde{\underline{X}}$ has approximate covariance matrix 
+$\mbox{diag} \{  f(\lambda_{[n/2]-n+k}) \}$.
+- This follows from Theorem 6.4.5:
+\[
+ \mbox{Cov} [ \widetilde{\underline{X}} ] = Q^* \, 
+ \mbox{Cov} [ \underline{X} ] \, Q  \approx \Lambda.
+\]
+
+## Exercise 7.18. DFT of Wolfer Sunspots.
+
+- We compute the DFT of the Wolfer sunspot data, and plot.
+
+```{r}
+wolfer <- read.table("wolfer.dat")
+wolfer <- ts(wolfer,start=1749,frequency=12)
+n <- length(wolfer)
+Q.mat <- get.qmat(n)
+x.dft <- Conj(t(Q.mat)) %*% wolfer
+plot(ts(Re(x.dft),start=-floor(n/2)+1,frequency=1),
+	xlab="Frequency Index",ylab="Real Part")
+plot(ts(Im(x.dft),start=-floor(n/2)+1,frequency=1),
+	xlab="Frequency Index",ylab="Imaginary Part")
+plot(ts(log(Mod(x.dft)^2),start=-floor(n/2)+1,frequency=1),
+	xlab="Frequency Index",ylab="Log Squared Modulus")
+```
+
+- We see higher values of the squared modulus (the uncentered periodogram) near
+frequency zero.
+
+## Exercise 7.20. DFT of Mauna Loa Growth Rate.
+
+- We compute the DFT of the Mauna Loa growth rate, and plot.
+
+```{r}
+mau <- read.table("mauna.dat",header=TRUE,sep="")
+mau <- ts(mau,start=1958,frequency=12)
+mau.gr <- diff(log(mau))
+n <- length(mau.gr)
+Q.mat <- get.qmat(n)
+x.dft <- Conj(t(Q.mat)) %*% mau.gr
+plot(ts(Re(x.dft),start=-floor(n/2)+1,frequency=1),
+	xlab="Frequency Index",ylab="Real Part")
+plot(ts(Im(x.dft),start=-floor(n/2)+1,frequency=1),
+	xlab="Frequency Index",ylab="Imaginary Part")
+plot(ts(log(Mod(x.dft)^2),start=-floor(n/2)+1,frequency=1),
+	xlab="Frequency Index",ylab="Log Squared Modulus")
+```
+
+- We see higher values of the uncentered periodogram in the shape of peaks, at four
+non-zero frequencies. These correspond to cyclical seasonal effects.
+
+# Lesson 7-3: Spectral Representation
+
+We discuss a representation of a stationary time series as a sum of stochastic cosines.
+
+## Definition 7.3.1. 
+
+- For a given spectral distribution $F$, a **spectral increment process** $Z$ is a
+complex-valued continuous-time stochastic process defined on the interval $[-\pi, \pi]$, 
+which has mean zero with *orthogonal increments*: for $\lambda_1 < \lambda_2 < \lambda_3 < \lambda_4$,
+the random variables $Z(\lambda_2) - Z(\lambda_1)$ and $Z(\lambda_4) - Z (\lambda_3)$ 
+are orthogonal. Also,
+\[
+ \mbox{Var} [ Z(\lambda_2) - Z(\lambda_1)] = \frac{1}{2 \pi}
+ \left( F(\lambda_2) - F (\lambda_1) \right).
+\]
+- The variance of a complex random variable is the expectation of its squared modulus.
+- We abbreviate the above expression by
+\[
+ \mbox{Var} [ dZ (\lambda) ] = \frac{1}{2 \pi}   dF (\lambda) .
+\]
+
+## Paradigm 7.3.4. Time Series Defined as a Stochastic Integral
+
+- We can define a time series via a stochastic integral as follows:
+\[
+  X_t = \int_{-\pi}^{\pi} e^{i \lambda t} dZ (\lambda).
+\]
+- This resembles a sum of stochastic cosines, where $dZ(\lambda)$ is the amplitude
+for a sinusoid $e^{i \lambda t}$.
+- Then $\{ X_t \}$ has mean zero and autocovariance
+\[
+ \mbox{Cov} [ X_{t+h}, {X}_t ] = 
+ \int_{-\pi}^{\pi} \int_{-\pi}^{\pi}  e^{i \lambda (t+h)} e^{-i \omega t}
+ \mbox{Cov} [ dZ(\lambda), dZ(\omega)]
+ =  \frac{1}{2 \pi} \int_{-\pi}^{\pi} e^{i \lambda h } dF (\lambda).
+\]
+- So $\{ X_t \}$ is weakly stationary with ACVF $\gamma (h)$ given by above formula.
+- Conversely: any mean zero weakly stationary time series $\{ X_t \}$ with 
+spectral distribution function $F$ can be represented by the above stochastic integral!
+
+## Corollary 7.3.8.
+
+- Suppose $\{ X_t \}$ is a mean zero weakly stationary time series with spectral
+representation, and let $Y_t = \psi (B) X_t$. Then 
+\[
+ Y_t = \sum_j \psi_j X_{t-j} = \sum_j \psi_j \int_{-\pi}^{\pi} e^{i \lambda (t-j)} dZ(\lambda)
+  = \int_{-\pi}^{\pi} \sum_j \psi_j e^{-i\lambda j} e^{i \lambda t} dZ(\lambda) =
+ \int_{-\pi}^{\pi} \psi(e^{-i \lambda}) e^{i \lambda t} dZ (\lambda).
+\]
+- So $\{ Y_t \}$ also has a spectral representation, but its increment process is
+$\psi (e^{-i \lambda}) dZ (\lambda)$, where $\psi (e^{-i \lambda})$ is the filter
+frequency response function. We can use this result to understand the impact of a
+filter in the frequency domain.
+- The ACVF is
+\[
+ \mbox{Cov} [ Y_{t+h}, Y_t] = \frac{1}{2 \pi} \int_{-\pi}^{\pi} e^{i \lambda h}
+  {| \psi (e^{-i \lambda} ) |}^2 dF (\lambda).
+\]
+
+## Example 7.3.10. Time Shift
+
+- Consider $\psi (B) = B^k$, a shift by $k$ time units. Then $\psi(e^{-i \lambda}) = e^{-i \lambda k}$
+and $Y_t = \int_{-\pi}^{\pi } e^{i \lambda (t-k)} dZ(\lambda)$. 
+- This is the same as $B^k X_t = X_{t-k}$.
+
+## Definition 7.3.11.
+
+- We can decompose the frequency response function into the **gain** function and
+the **phase delay** function, each with an interpretation from the spectral representation.
+- We use the polar decomposition of a complex number: for any $\lambda$,
+\[
+ \psi(e^{-i \lambda}) = |\psi(e^{-i \lambda})| \, \exp \{ i \mbox{Arg} \psi(e^{-i \lambda}) \}.
+\]
+- The magnitude $|\psi(e^{-i \lambda})|$ is called the **gain** function of the filter. 
+It is computed by taking the square root of sum of squares of real and imaginary parts.
+- The angular portion $\mbox{Arg} \psi(e^{-i \lambda})$ is called the **phase** function
+of the filter. It is computed by taking the arc tangent of the ratio of imaginary to real
+parts.
+- When the phase function is differentiable with respect to $\lambda$, we define the
+**phase delay** via
+\[
+ \Upsilon (\lambda) = \frac{- \mbox{Arg} \psi(e^{-i \lambda}) }{\lambda} 
+\]
+for $\lambda \neq 0$, and the limit of such for $\lambda = 0$.
+- The phase delay may be discontinuous in $\lambda$.
+- The gain is an even function; both phase and phase delay are odd. So we usually
+just plot them over $[0,\pi]$ instead of $[-\pi, \pi]$.
+
+## Fact 7.3.12. Action of Phase Delay.
+
+- From Corollary 7.3.8, 
+\[
+ Y_t = \int_{-\pi}^{\pi}  e^{i (\lambda t + \mbox{Arg} \psi(e^{-i \lambda}) ) } |\psi(e^{-i \lambda})| dZ (\lambda)
+ = \int_{-\pi}^{\pi}  e^{i \lambda (t - \Upsilon (\lambda) ) } |\psi(e^{-i \lambda})| dZ (\lambda).
+\]
+- So at frequency $\lambda$, time $t$ is delayed by $\Upsilon (\lambda)$ time units.
+- Also, the gain modifies the autocovariances.
+
+## Example 7.3.13. Simple Moving Average Filters Cause Delay
+
+- Consider the simple moving average filter $\psi (B) = (1 + B + B^2)/3$, which gives
+the average of the past and present $3$ observations.
+- We directly compute the frequency response function:
+\[
+ \psi(e^{-i \lambda}) = \frac{1 + e^{-i \lambda} + e^{-i 2 \lambda}}{3}
+ = e^{-i \lambda} \, \frac{e^{i \lambda} + 1 + e^{-i  \lambda}}{3}
+ = e^{-i \lambda} \, \frac{1 + 2 \cos (\lambda)}{3}.
+\]
+- The gain function is 
+\[
+ \frac{1}{3} | 1 + 2 \cos (\lambda) |. 
+\]
+- Note that $1 + 2 \cos (\lambda)$ is non-negative for $\lambda \in [0, 2 \pi/3]$,
+so the phase function equals $-\lambda$ over that set. Otherwise, we need a $-1$ factor
+which leads to a phase function equal to $-\lambda - \pi$. 
+- The phase delay function is then
+\[
+\Upsilon (\lambda) = \begin{cases} 1 \quad \mbox{if} \; \lambda \in [0, 2 \pi/3] \\
+ 1 + \pi/\lambda \quad \mbox{else}. \end{cases}
+\]
+- Since this function is positive, the filter always provides a delay.
+- The gain function attenuates higher frequencies, due to the cosine shape, so the filter 
+is a "low-pass."
+
+## Example 7.3.14. Differencing Causes an Advance
+
+- Consider the differencing filter $\psi (B) = 1-B$.
+- The frequency response function is 
+\[
+ \psi(e^{-i \lambda}) = 1 - e^{-i \lambda} = 1 - \cos(\lambda) - i \sin (\lambda).
+\]
+- The squared gain function is $2 - 2 \cos (\lambda)$. 
+- The phase function is $(\pi - \lambda)/2$. 
+- Away from $\lambda = 0$, the phase delay is $\Upsilon (\lambda) = .5 (1 - \pi/\lambda)$.
+This is negative for $\lambda \in (0,\pi]$, so differencing causes an advance.
+- The gain function attenuates lower frequencies, so the filter is a "high-pass."
+
+## Exercise 7.29. Phase and Gain for Simple Moving Average. 
+
+- Consider the simple moving average of order $p$: $\psi (B) = {(2p+1)}^{-1} \sum_{j=-p}^p B^j$.
+- It can be shown that
+\[
+ \psi(e^{-i \lambda}) = \frac{ \sin (\lambda (p+1/2))}{ (2p+1) \sin (\lambda/2)}
+\]
+- We use this formula to encode and display the gain and phase functions, as well
+as the real and imaginary parts of the frequency response function.
+
+```{r}
+lambda <- pi*seq(-1000,1000)/1000
+p <- 3
+simplema.frf <- sin((p+1/2)*lambda)/((2*p+1)*sin(lambda/2))
+simplema.gain <- Mod(simplema.frf)
+simplema.phase <- atan(Im(simplema.frf)/Re(simplema.frf))
+simplema.delay <- -1*simplema.phase/lambda
+plot(ts(Re(simplema.frf),start=-1,frequency=1000),
+	xlab="Frequency",ylab="Real Part Frf")
+plot(ts(Im(simplema.frf),start=-1,frequency=1000),
+	xlab="Frequency",ylab="Imaginary Part Frf")
+plot(ts(simplema.gain,start=-1,frequency=1000),
+	xlab="Frequency",ylab="Gain")
+plot(ts(simplema.phase,start=-1,frequency=1000),
+	xlab="Frequency",ylab="Phase")
+plot(ts(simplema.delay,start=-1,frequency=1000),
+	xlab="Frequency",ylab="Phase Delay")
+```
+
+## Exercise 7.30. Phase and Gain for Seasonal Aggregation Filter.
+
+- Consider the seasonal aggregation filter: $\psi (B) = \sum_{j=0}^{s-1} B^j$.
+- We encode and display the gain and phase functions, as well
+as the real and imaginary parts of the frequency response function.
+
+```{r}
+lambda <- pi*seq(-1000,1000)/1000
+s <- 12
+seasagg.frf <- exp(-1i*lambda*(s-1)/2)*sin((s/2)*lambda)/sin(lambda/2)
+seasagg.gain <- Mod(seasagg.frf)
+seasagg.phase <- atan(Im(seasagg.frf)/Re(seasagg.frf))
+seasagg.delay <- -1*seasagg.phase/lambda
+seasagg.delay[1001] <- NA
+plot(ts(Re(seasagg.frf),start=-1,frequency=1000),
+	xlab="Frequency",ylab="Real Part Frf")
+plot(ts(Im(seasagg.frf),start=-1,frequency=1000),
+	xlab="Frequency",ylab="Imaginary Part Frf")
+plot(ts(seasagg.gain,start=-1,frequency=1000),
+	xlab="Frequency",ylab="Gain")
+plot(ts(seasagg.phase,start=-1,frequency=1000),
+	xlab="Frequency",ylab="Phase")
+plot(ts(seasagg.delay,start=-1,frequency=1000),
+	xlab="Frequency",ylab="Phase Delay")
+```
+ 
 
  
 
