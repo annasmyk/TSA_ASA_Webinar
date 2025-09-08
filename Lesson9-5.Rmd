@@ -1,0 +1,143 @@
+---
+title: 'Time Series: A First Course with Bootstrap Starter'
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r, setup, include=FALSE}
+knitr::opts_knit$set(root.dir = '/home/tucker/Documents/GitHub/BEwebinar/Data')
+```
+
+# Lesson 9-5: Sample Autocovariance
+
+- We renormalize the ACVF estimator via tapering.
+
+## Remark 9.5.2. Tapering the ACVF to Reduce Variability in High Lags
+
+- The estimator $\widetilde{\gamma} (h)$ is approximately unbiased, but has high variance
+for large $h$.
+- We can replace the $n-h$ divisor by $n$, in order to decrease variance for larger $h$.
+- This is like multiplying $\widetilde{\gamma} (h)$ by $1 - h/n$, which is an example
+of a taper.
+
+## Definition 9.5.3.
+
+- An autocovariance *taper* is a bounded, even real-valued function $\Lambda$ on $[-1,1]$,
+such that $\Lambda (0) = 1$ and $\Lambda (x) \leq 1$. 
+- We multiply the ACVF estimator at lag $h$ by $\Lambda (h/n)$, where $\Lambda (x) = 1 - |x|$.
+
+## Example 9.5.4. Bartlett Taper
+
+- The Bartlett taper is $\Lambda (x) = 1 - |x|$. 
+- The resulting estimator is
+\[
+ \widehat{\gamma} (h) = \Lambda (h/n) \widetilde{\gamma} (h) = 
+ \frac{1}{n} \sum_{t=1}^{n-|h|} (X_{t+|h|} - \overline{X})(X_t - \overline{X}).
+\]
+- This is called the *sample autocovariance function* (sample ACVF) 
+- Under $m$-dependence, Corollary 9.5.8 establishes a central limit theorem for the sample ACVF:
+  \[
+   \sqrt{n} ( \widehat{\gamma} (h)  - \gamma (h)) \Rightarrow \mathcal{N} (0, \tau^2_{\infty}).
+\]
+
+## Exercise 9.28. Sample ACVF of ARMA(1,2) Process
+
+- We load some functions needed to compute the true ACVF.
+
+```{r}
+polymult <- function(a,b) {
+bb <- c(b,rep(0,length(a)-1))
+B <- toeplitz(bb)
+B[lower.tri(B)] <- 0
+aa <- rev(c(a,rep(0,length(b)-1)))
+prod <- B %*% matrix(aa,length(aa),1)
+return(rev(prod[,1]))
+}
+
+ARMAauto <- function(phi,theta,maxlag)
+{
+	p <- length(phi)
+	q <- length(theta)
+	gamMA <- polymult(c(1,theta),rev(c(1,theta)))
+	gamMA <- gamMA[(q+1):(2*q+1)]
+	if (p > 0) 
+	{
+		Amat <- matrix(0,nrow=(p+1),ncol=(2*p+1))
+		for(i in 1:(p+1))
+		{
+			Amat[i,i:(i+p)] <- c(-1*rev(phi),1)
+		}
+		Amat <- cbind(Amat[,(p+1)],as.matrix(Amat[,(p+2):(2*p+1)]) +
+			t(matrix(apply(t(matrix(Amat[,1:p],p+1,p)),2,rev),p,p+1)))
+		Bmat <- matrix(0,nrow=(q+1),ncol=(p+q+1))
+		for(i in 1:(q+1))
+		{
+			Bmat[i,i:(i+p)] <- c(-1*rev(phi),1)
+		}
+		Bmat <- t(matrix(apply(t(Bmat),2,rev),p+q+1,q+1))
+		Bmat <- matrix(apply(Bmat,2,rev),q+1,p+q+1)
+		Bmat <- Bmat[,1:(q+1)]
+		Binv <- solve(Bmat)
+		gamMix <- Binv %*% gamMA
+		if (p <= q) { gamMix <- matrix(gamMix[1:(p+1),],p+1,1) 
+			} else gamMix <- matrix(c(gamMix,rep(0,(p-q))),p+1,1)
+		gamARMA <- solve(Amat) %*% gamMix 
+	} else gamARMA <- gamMA[1]
+
+	gamMA <- as.vector(gamMA)
+	if (maxlag <= q) gamMA <- gamMA[1:(maxlag+1)] else gamMA <- c(gamMA,rep(0,(maxlag-q)))
+	gamARMA <- as.vector(gamARMA)
+	if (maxlag <= p) gamARMA <- gamARMA[1:(maxlag+1)] else {
+	for(k in 1:(maxlag-p))
+	{
+		len <- length(gamARMA)
+		acf <- gamMA[p+1+k]
+		if (p > 0) acf <- acf + sum(phi*rev(gamARMA[(len-p+1):len]))
+		gamARMA <- c(gamARMA,acf)
+	} }
+	return(gamARMA)
+}
+```
+
+- We simulate a Gaussian ARMA(1,2) process of length $n=200$.
+
+```{r}
+armapq.sim <- function(n,burn,ar.coefs,ma.coefs,innovar)
+{
+	p <- length(ar.coefs)
+	q <- length(ma.coefs)
+	z <- rnorm(n+burn+p+q,sd=sqrt(innovar))
+	x <- filter(z,c(1,ma.coefs),method="convolution",sides=1)
+	x <- x[(q+1):(q+n+burn+p)]
+	y <- x[1:p]
+	for(t in (p+1):(p+n+burn))
+	{
+		next.y <- sum(ar.coefs*y[(t-1):(t-p)]) + x[t]
+		y <- c(y,next.y)
+	}	
+	y <- y[(p+burn+1):(p+burn+n)]
+	return(y)
+}
+
+n <- 200
+phi1 <- .5
+theta1 <- 5/6
+theta2 <- 1/6
+x.sim <- armapq.sim(n,500,phi1,c(theta1,theta2),1)
+```
+
+- We construct and plot the sample acvf.
+- We also overlay the true acvf in red.
+
+```{r}
+y.sim <- x.sim - mean(x.sim)
+x.acf <- mean(y.sim^2)
+for(h in 1:20)
+{
+	x.acf <- c(x.acf,sum(y.sim[1:(n-h)]*y.sim[(h+1):n])/n)
+}
+gamma <- ARMAauto(phi1,c(theta1,theta2),21)
+plot(ts(x.acf,start=0,frequency=1),xlab="Lag",ylab="Sample Autocovariance",type="h",lwd=2)
+lines(ts(gamma,start=0,frequency=1),type="h",col=2)
+```
