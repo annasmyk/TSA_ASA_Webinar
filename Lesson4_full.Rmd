@@ -1,5 +1,5 @@
 ---
-title: 'Time Series: A First Course with Bootstrap Starter'
+title: 'Chapter 4: The Geometry of random variables'
 output: pdf_document
 toc: true
 toc-depth: 3
@@ -9,10 +9,59 @@ toc-depth: 3
 knitr::opts_knit$set(root.dir = "Data")
 ```
 
+
+## My add-ons, summing-up 
+
+3 applications of projections 
+
+- forecasting (intuition = residuals to zero, justification: normal equations, conditional expectation)
+
+- projection of signals 
+  - concept of latent process
+  - signal and noise, independent 
+  - signal extraction (proj signal onto data, signal = linear filter of data)
+- interpolation 
+
+
+### Concepts and questions 
+
+- intuition for inner product, correlation
+
+### Tucker questions 
+
+
+
+### TP / questions 
+
+- apply to RF3030
+
+
+### Insert, flesh out 
+
+- theorems from Pradel
+
+
+
+
+
+### Code skills 
+
+
+#### Options 
+
+Set xaxt = "n" and yaxt = "n" to remove the tick labels of the plot
+
+
+
+
 # Lesson 4-1: Vector Space Geometry
 
 - Euclidean geometry and linear algebra are tools for analyzing n-dimensional space.
 - We can adapt these tools to studying time series random vectors. 
+
+
+
+
 
 ## Example 4.1.1.  Angle Between Two Vectors
 
@@ -559,6 +608,7 @@ for some $q > 0$.
 - We can view the impact of $q$ on the autocovariance, with $\phi = .7$ and $\sigma = 1$
 - First we examine the case with $q=1$. Second, we decrease to $q = .1$, which makes the 
 noise relatively stronger, thus dampening the serial correlation.
+- q= snr = signal to noise ratio, $q \sigma^2$: residual in AR, hence q smaller noise stronger 
 
 ```{r}
 snr <- 1
@@ -623,6 +673,8 @@ we seek $\widehat{Z}_t = P_{ \overline{\mbox{sp}} \{ X_t \}} [Z_t]$.
 for any $1 \leq t \leq n$.
 
 ### Case of White Noise
+
+signal retrieved as difference with projection of noise
 
 - Suppose that $\{ W_t \}$ is white noise (with variance $\sigma^2$), and that the signal $\{ Z_t \}$ is stationary.
 - Then the normal equations yield

@@ -1,11 +1,72 @@
 ---
 title: 'Time Series: A First Course with Bootstrap Starter'
 output: pdf_document
+toc: true
+toc-depth: 3
 ---
 
 ```{r, setup, include=FALSE}
 knitr::opts_knit$set(root.dir = "Data")
 ```
+
+\pagebreak
+
+# Lesson 2: Takes and tools 
+
+## Takes 
+
+add law of cosines 
+
+- triangle 
+- vectors 
+- form in the book: $cos(\theta)$ expresses autocorrelation 
+
+elements from Pradel 
+
+- les 3 perp 
+
+gaussian random V comp avec pradel
+
+- cumul de (0,1) donne une N(0,1) vect
+
+- multiplication par une racine de mat de var-covar (equivalent du $\sigma$)
+
+pour simuler $\mathcal{N}(\mu,\Sigma)$
+
+## Questions
+
+- def matrice var covar before props: vv'
+
+- relation avec ps: v'v
+
+- pb of bivariate normal (here ?)
+
+- cholesky decomp = square root, not unique (à un scalire pres ou "pire")
+
+- student moy/ var
+
+## Links to JD+ 
+
+algos, doc and related training
+
+in my training 
+
+in tooklkit or other functions ? 
+
+- distribs ?
+
+in GUI display ? 
+
+## Overview in book 
+
+
+### Concepts 
+
+
+### R skills
+
+- simulate bivariate, n variate normal ?
+
 
 
 # Lesson 2-1: Random Vectors
@@ -53,11 +114,11 @@ and covariance matrix $B B^{\prime}$.
 ```{r}
 Sigma <- rbind(c(2,1),c(1,4))
 mu <- c(1,2)
-B <- t(chol(Sigma))
-z <- matrix(rnorm(2*100),nrow=2)
+B <- t(chol(Sigma)) # t to get lower triangular
+z <- matrix(rnorm(2*100),nrow=2) # 2 vecteurs de 100 obs
 x <- B %*% z + mu
 print(colMeans(t(x)))
-print(var(t(x))) ## var matrice ? comment est calculé ?
+print(var(t(x)))
 ```
 
 ## Gaussian Random Vectors
@@ -136,12 +197,12 @@ plot(ts(x),xlab="Time",ylab="")
 ```{r}
 n <- 100
 set.seed(222)
-A <- rnorm(1) # une seule rea pour A
+A <- rnorm(1)
 set.seed(223)
-phi <- 2*pi*runif(1) # une seule rea pour phi 
-lambda <- pi/6 # le nu
+phi <- 2*pi*runif(1)
+lambda <- pi/6
 set.seed(224)
-x <- A*cos(seq(1,n)*lambda + phi) # seq(1,n) le temps
+x <- A*cos(seq(1,n)*lambda + phi)
 plot(ts(x),xlab="Time",ylab="")
 ```
 
@@ -207,13 +268,12 @@ x2 <- NULL
 x3 <- NULL
 x4 <- NULL
 
-
-for(i in 1:100) { #pas de i dans la boucle
+for(i in 1:100) {
 
 z <- rnorm(10)
 x <- rep(0,10)
 phi <- .9
-x0 <- rnorm(1)/sqrt(1-phi^2) # init pour variance identique 
+x0 <- rnorm(1)/sqrt(1-phi^2)
 x[1] <- phi*x0 + z[1]
 for(t in 2:10) { x[t] <- phi*x[t-1] + z[t] }
 

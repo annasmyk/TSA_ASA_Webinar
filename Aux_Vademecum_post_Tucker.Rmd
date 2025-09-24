@@ -1,0 +1,175 @@
+---
+title: 'Tucker: Foundations and Extensions'
+output: pdf_document
+toc: true
+toc-depth: 3
+---
+
+```{r, setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "Data")
+```
+
+\pagebreak
+
+
+# General Steps 
+
+- finish up T to a good point and come back to text book to enhance and clarify
+
+In doing so AR synthetic schemas (cf sheets)
+
+  - filters 
+  - distribs 
+  - geometry
+  - generating functions 
+  - estimators list 
+  
+R examples, puis exos, puis see if R fucntion and rjd3 funtion 
+
+- 0 around distribs and inverse distribs (Rikvith): toolkit doc 
+
+- 1 CHAP spectral analysis part (direct JD+ output + doc chap spill over !!)
+
+- 2 CHAP basic regression yc exos et Mulet R (link to regarima : 1 T ..puis planas and SH)
+
+
+## By Chap Procedure 
+
+now: 3E: exraction, examples, exos 
+
+- notebook + recording : notes 
+
+- insert notes, AR with TOC
+
+- fill in holes 
+
+- R examples
+
+- R exos
+
+- review R: 1 first princ, 2 native R, 3 JD+ functions 
+(see book TS in R in a very target way !)
+
+- overview in book + list of R skils 
+
+- book (refs for proofs)
+
+- feed TS mulet, above all foreacsting (special)
+
+# Questions to Tucker 
+
+- read HB article for 
+
+# Concepts for crash explanation
+
+what is it ? why do we need it ? example !
+
+- causality 
+
+- invert 
+
+TCL (vs wlln), specs for TS
+
+long run variance 
+
+generating functions 
+- moments 
+- carac 
+- autocov 
+
+# Voc 
+
+- sieve : seib 
+
+- if you want to mitigate 
+
+- in the interest of time, I ll skip...
+
+- whacky, jittery contrary of smooth 
+
+# Extensions 
+
+3 themes :
+
+- distribs (beta, gamma...) cf. toolkit 
+
+- spectral stuff (display of info, yc in GUI for TS, SA tests)
+
+- filters (linked), till WK, UC decomp and TS doc in JD+
+
+## stage 1
+
+read X, post T, with differen perspective ..: compare, contrast, note additional info 
+
+
+
+- p course 
+
+- planas 
+
+- charpentier
+
+- TS in R book (check diff with first principles)
+
+- INE form 
+
+- JD+ doc yc packs 
+
+- Guy M book 
+
+- HF paper
+
+- HB decomp by tucker 
+
+- HB data transfo 
+
+## stage 2: dlm course
+
+slides, material model
+
+spill er now casting yc with jd+
+
+# CRASH (trs jms, oecd)
+
+## Around JD+
+
+- bench and TD (see argentina and rjd3 doc)
+
+- rev analysis 
+
+- nowcasting 
+
+- filers 
+
+(obj: finir tuto UROS)
+
++ feed foreacting mulet 
+
+
+## Cran Task view 
+
+copy paste, listof concepts
+
+## Change points 
+
+start with review 
+
+## Decoupes 
+
+- alain (coeffs var, trend est..) 
+
+- pilar 
+
+- tj fisher 
+
+- rlund
+
+
+
+# Future Work 
+
+- spectral A: get into wavelets and analysis à la pilar compared to TS X11
+
+- new SA tucker review, cf paper + questions 
+
+- new X13 ython pack (cf envoi à T)

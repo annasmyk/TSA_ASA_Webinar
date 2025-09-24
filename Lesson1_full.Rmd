@@ -1,11 +1,16 @@
 ---
 title: 'Time Series: A First Course with Bootstrap Starter'
 output: pdf_document
+toc: true
+toc-depth: 3
 ---
 
 ```{r, setup, include=FALSE}
 knitr::opts_knit$set(root.dir = "Data")
 ```
+
+\pagebreak
+
 
 # Lesson 1: Takes and tools 
 
@@ -19,6 +24,10 @@ knitr::opts_knit$set(root.dir = "Data")
 
 - rarely a good idea to regress on time only 
 
+## Questions
+
+why correlation captures only linear dependence ?
+
 
 ## Tools 
 
@@ -28,6 +37,30 @@ knitr::opts_knit$set(root.dir = "Data")
 ## Links to JD+ 
 
 algos, doc and related training
+
+## Overview in book 
+
+- concept 1: ts as a sequence of RV
+
+- concept 2: serial dependance
+
+(cycles and seaso)
+
+- concept 3: data transforms 
+
+- concept 4: reg on time (usually bas idea)
+
+- concept 5: auto reg 
+
+### R skills 
+
+- plots 
+
+- simulating random V
+
+- regression on time
+
+- auto reg, with proper init 
 
 
 
