@@ -27,9 +27,14 @@ knitr::opts_knit$set(root.dir = "Data")
 
 - intuition for inner product, correlation
 
+### Pull out 
+
+- basic forecasting concepts for course estp 
+(forecasting white sheet + chap + mulet ...just like filters)
+
 ### Tucker questions 
 
-
+- formulas 
 
 ### TP / questions 
 
@@ -40,16 +45,9 @@ knitr::opts_knit$set(root.dir = "Data")
 
 - theorems from Pradel
 
-
-
-
-
 ### Code skills 
 
-
-#### Options 
-
-Set xaxt = "n" and yaxt = "n" to remove the tick labels of the plot
+- projection on a plane 
 
 
 

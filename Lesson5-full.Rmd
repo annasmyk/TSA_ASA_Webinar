@@ -1,13 +1,50 @@
 ---
 title: 'Time Series: A First Course with Bootstrap Starter'
-output:
-  html_document:
-    df_print: paged
+output: pdf_document
+toc: true
+toc-depth: 3
 ---
 
 ```{r, setup, include=FALSE}
 knitr::opts_knit$set(root.dir = "Data")
 ```
+
+
+## My add-ons, summing-up 
+
+3 applications of projections 
+
+
+
+
+### Concepts and questions 
+
+
+
+### Pull out 
+
+- filter formulas 
+
+### Tucker questions 
+
+
+
+### TP / questions 
+
+
+
+
+### Insert, flesh out 
+
+
+
+### Code skills 
+
+
+
+
+
+
 
 # Lesson 5-1: ARMA Processes
 
@@ -51,11 +88,16 @@ $t-j = t+h -k$, or $j = k-h$. So the double sum collapses to a single sum, setti
 - But if $h > q$, then it's impossible for $k = j +h$, because $j +h \geq h > q \geq k$.
 - This formula is a convolution of the sequence $\{ \theta_j \}$ with its reverse!
 
+Q here : fully get this convolution stuff
+
 ## Exercise 5.14. Product of Polynomials
 
 - We can quickly compute the autocovariance function for an MA process by convolution
 of the moving average polynomial with its reverse. 
 - The convolution is also obtained by reading off the product of polynomials.
+
+...by reading off
+
 - We apply this idea to numerically compute the autocovariance for an MA(3) with
 $\theta(z) = 1 + .4z + .2z^2 - .3z^3$, and $\sigma = 1$.
 - First we write a routine to multiply polynomials.
@@ -77,7 +119,7 @@ polymul <- function(a,b)
 
 ```{r}
 theta <- c(1,.4,.2,-.3)
-gamma <- polymul(theta,rev(theta))
+gamma <- polymul(theta,rev(theta)) # les coeffs et les coeffs à l'envers
 print(gamma)
 ```
 

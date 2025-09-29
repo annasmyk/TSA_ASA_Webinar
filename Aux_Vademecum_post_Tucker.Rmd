@@ -89,7 +89,10 @@ generating functions
 
 # Extensions 
 
-3 themes :
+4 themes :
+
+- review HF paper (coding spirit) to spot remaining holes 
+
 
 - distribs (beta, gamma...) cf. toolkit 
 
@@ -97,11 +100,15 @@ generating functions
 
 - filters (linked), till WK, UC decomp and TS doc in JD+
 
-## stage 1
+## stage 1: reifning basics and JD+ doc 
 
-read X, post T, with differen perspective ..: compare, contrast, note additional info 
+first move : post chap 7 all spectral analysis and seaso tests in jd+
 
+- GUI dipslay
 
+- methodo doc 
+
+*critically* read X, post T, with differen perspective ..: compare, contrast, note additional info 
 
 - p course 
 
