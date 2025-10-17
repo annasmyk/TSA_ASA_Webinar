@@ -9,6 +9,71 @@ toc-depth: 3
 knitr::opts_knit$set(root.dir = "Data")
 ```
 
+\pagebreak
+
+
+# Lesson 7: Active Recall space
+
+\pagebreak
+
+# Lesson 7: Takes and tools 
+
+## Takes 
+
+
+## Questions
+
+- we have explicit formulas for arma, then what is the step to arIma
+
+## Links to JD+ 
+
+key = small TPs on my data 
+
+
+
+## Overview in book 
+
+- revisiter chapitres cache te txt book à la lumiere de ça
+
+TP: recoder et refaire JD+ plots, if not pssible why ?
+
+ex periodogram 
+ar spectrum 
+tuckey spectrum
+
+
+### Concepts 
+
+Partie 1; concept of spectral distibution (CDF vs PDF), more general than spectral density
+
+computing : from spectral density, here formulas from models 
+
+Partie 2 : DFT and 
+periodogram 
+
+here we get to data, moment to 
+
+
+### R skills
+
+- compute arma (p,q) spectral distrib: from spectral density and then numerical integration (trapeze approx)
+- simulate AR(p)
+- compute DFT vector
+
+
+
+distinction : what can be done 
+
+- from model 
+
+ex MA: direct formula 
+
+- from data
+
+
+
+
+
 # Lesson 7-1: Herglotz Theorem 
 
 We further study the relationship between autocovariance and spectral density.
@@ -156,7 +221,7 @@ plot(ts(spec,start=-1,frequency=mesh),xlab="Cycles",ylab="Spectral Distribution"
 
 We introduce the data analysis tool of Discrete Fourier Transform.
 
-## Definition 7.2.3.
+## Definition 7.2.3.: DFT
 
 Given a sample $X_1, \ldots, X_n$, the **Discrete Fourier Transform** (DFT) at the
 Fourier frequency $\lambda_l = 2 \pi l/n$ (for $[n/2]-n+1 \leq l \leq [n/2]$) is
@@ -164,7 +229,7 @@ Fourier frequency $\lambda_l = 2 \pi l/n$ (for $[n/2]-n+1 \leq l \leq [n/2]$) is
  \widetilde{X} (\lambda_l) = n^{-1/2} \sum_{t=1}^n X_t e^{-i \lambda_l t}.
 \]
 
-## Definition 7.2.4.
+## Definition 7.2.4. Periodorgam
 
 - The **periodogram** $I(\lambda)$ is a non-negative function of $\lambda \in [-\pi,\pi]$,
 constructed from the sample $X_1, \ldots, X_n$:
@@ -179,7 +244,7 @@ no centering by the sample mean. We denote this by $\widetilde{I} (\lambda)$, an
 - The periodogram is an empirical version of the spectral density, and shares certain
 properties. Higher values correspond to cyclical effects in the data.
 
-## Proposition 7.2.7.
+## Proposition 7.2.7. Recovering data from DFT vector
 
 - Let the vector of DFTs be denoted $\widetilde{\underline{X}}$, which has components
 $\widetilde{X} (\lambda_l)$. 

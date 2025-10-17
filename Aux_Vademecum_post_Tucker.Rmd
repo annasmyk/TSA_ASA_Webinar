@@ -11,6 +11,37 @@ knitr::opts_knit$set(root.dir = "Data")
 
 \pagebreak
 
+Tucker = foundation 1
+V Gomez = foundation 2
+
+extensions stay the same 
+
+progressive and patient (now I have the foundations)
+
+build 3 courses (very specific)
+
+- crash for TS (foundations: me, succ T...)
+
+- (flesh out our SA and R trainings)
+and build (progressively)
+
+- SA adv : start structure and tramo S (from jp, ine..then tuckers webinar)
+
+- Forecasting à la ESTP (rapid estimates but better)
+
+
+what does succes look like ? 
+- jd+ toc ..and details 
+- hb on sa toc and details 
+- hb on rapid estimates 
+- hb on temp disagg
+-...papers
+
+be able to dissect this...
+
+
+# Crash questions and answers
+
 
 # General Steps 
 
